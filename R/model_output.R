@@ -1,14 +1,14 @@
 #' @export
-coef.hlogit <- function(hlogit){
+coef.hglm <- function(hglm){
   #Return coefficients
 }
 
 #' @export
-vcov.hlogit <- function(hlogit){
+vcov.hglm <- function(hglm){
   #Return variance-covariance matrix
 }
 
 #' @export
-print.hlogit <- function(hlogit){
-  print("Output of hiper_logit()")
+print.hglm <- function(hglm){
+  print("Output of hiper_glm()")
 }
