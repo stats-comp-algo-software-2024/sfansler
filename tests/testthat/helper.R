@@ -41,7 +41,7 @@ approx_grad <- function(func, beta, ..., dx = .Machine$double.eps^(1/3)) {
   for(i in 1:length(beta)){
     e = rep(0, times = length(beta))
     e[i] = 1
-    numerical_grad[i] = (fn(beta + dx*e) - fn(beta - dx*e))/(2*dx)
+    numerical_grad[i] = (fn(beta + dx * e) - fn(beta - dx * e)) / (2 * dx)
   }
   return(numerical_grad)
 }
