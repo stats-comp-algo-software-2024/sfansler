@@ -29,7 +29,7 @@ test_that("linalg and optim least-sq coincide", {
   outcome = df$outcome
 
   linalg_result = find_mle_pseudo_inv(design, outcome)$coef
-  BFGS_result = find_mle_optim_linear(design = design, outcome = outcome, method = 'BFGS')$coef
+  BFGS_result = find_mle_optim_linear(design = design, outcome = outcome)$coef
 
   expect_true(are_all_close(linalg_result, BFGS_result, abs_tol = 1e-3, rel_tol = 1e-3))
 })
@@ -40,7 +40,7 @@ test_that("newton and bfgs outputs coincide on logit model", {
   data <- simulate_data(n_obs, n_pred, model = 'logit', seed = 1918)
   design <- data$design; outcome <- data$outcome
   via_newton_out <- find_mle_newton(design = design, outcome = outcome)$coef
-  via_bfgs_out <- find_mle_optim_logistic(design = design, outcome = outcome, method = 'BFGS')$coef
+  via_bfgs_out <- find_mle_optim_logistic(design = design, outcome = outcome)$coef
 
   expect_true(are_all_close(
     via_newton_out, via_bfgs_out, abs_tol = 1e-3, rel_tol = 1e-3
