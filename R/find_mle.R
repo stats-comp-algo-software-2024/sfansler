@@ -9,25 +9,27 @@ mle$info_mat = (t(design) %*% design) / noise_variance
 return(mle)
 }
 
-#'Find MLE using BFGS for a linear model (via log-likelihood and gradient)
-find_mle_optim_linear = function(design, outcome, method) {
+#' Finds MLE using BFGS for a linear model (via log-likelihood and gradient)
+find_mle_optim_linear = function(design, outcome) {
   p = ncol(design)
   init = rep(0, p)
   mle = list()
-  mle$coef = stats::optim(par = init, fn = log_likelihood_linear, gr = gradient_linear, control = list(fnscale = -1), design = design, outcome = outcome, method = method)$par
+  mle$coef = stats::optim(par = init, fn = log_likelihood_linear, gr = gradient_linear, control = list(fnscale = -1), design = design, outcome = outcome, method = "BFGS")$par
   mle$info_mat = -hessian(beta = mle$coef, design = design, outcome = outcome)
   return(mle)
 }
 
-find_mle_optim_logistic = function(design, outcome, method) {
+#' Finds MLE using BFGS for a logistic model (via log-likelihood and gradient)
+find_mle_optim_logistic = function(design, outcome) {
   p = ncol(design)
   init = rep(0, p)
   mle = list()
-  mle$coef = stats::optim(par = init, fn = log_likelihood_logistic, gr = gradient_logistic, control = list(fnscale = -1), design = design, outcome = outcome, method = method)$par
+  mle$coef = stats::optim(par = init, fn = log_likelihood_logistic, gr = gradient_logistic, control = list(fnscale = -1), design = design, outcome = outcome, method = "BFGS")$par
   mle$info_mat = -hessian(beta = mle$coef, design = design, outcome = outcome)
   return(mle)
 }
 
+#' Finds MLE using Newton's method for a logistic model
 find_mle_newton = function(design, outcome) {
   p = ncol(design)
   beta = rep(0, p)
@@ -40,18 +42,3 @@ find_mle_newton = function(design, outcome) {
   mle = list(coef = beta, info_mat = info)
   return(mle)
 }
-
-
-find_mle = function(design, outcome, model, option){
-  if(is.null(option$mle_solver)){
-    if(model == "linear"){
-      mle = find_mle_pseudo_inv(design = design, outcome = outcome)
-    } else {
-      mle = find_mle_newton(design = design, outcome = outcome)
-    }
-  } else {
-    mle = find_mle_optim_logistic(design = design, outcome = outcome, option$mle_solver)
-  }
-  return(mle)
-}
-
