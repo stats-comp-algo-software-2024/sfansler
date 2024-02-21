@@ -33,12 +33,27 @@ find_mle_optim_logistic = function(design, outcome) {
 find_mle_newton = function(design, outcome) {
   p = ncol(design)
   beta = rep(0, p)
-  for(i in 1:500){
-    grad = gradient_logistic(design = design, outcome = outcome, beta = beta)
-    info = -hessian(design = design, outcome = outcome, beta = beta)
-    beta = beta + solve(info, grad)
-    i = i + 1
+  max_iter = 1e5
+  iter = 0
+  z = c()
+  prob = c()
+  change = 5
+  beta_diff = matrix(nrow = 50, ncol = 3)
+  while(change > 1e-10){
+  if(iter < max_iter){
+          likelihood_prev = log_likelihood_logistic(design = design, outcome = outcome, beta = beta)
+          grad = gradient_logistic(design = design, outcome = outcome, beta = beta)
+          info = -hessian(design = design, outcome = outcome, beta = beta)
+          beta = beta + solve(info, grad)
+          likelihood_new = log_likelihood_logistic(design = design, outcome = outcome, beta = beta)
+          z = likelihood_new - likelihood_prev
+          change = z^2 / 2
+          iter = iter + 1
+  }else {
+    stop("Convergence not reached in maximum iterations")
+  }
   }
   mle = list(coef = beta, info_mat = info)
   return(mle)
-}
+  }
+
