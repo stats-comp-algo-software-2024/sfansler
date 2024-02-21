@@ -35,25 +35,22 @@ find_mle_newton = function(design, outcome) {
   beta = rep(0, p)
   max_iter = 1e5
   iter = 0
-  z = c()
-  prob = c()
-  change = 5
-  beta_diff = matrix(nrow = 50, ncol = 3)
-  while(change > 1e-10){
-  if(iter < max_iter){
+  abs_diff = rel_diff = 1 #Initialize differences so loop will run
+
+  while(any(c(abs_diff, rel_diff) > p * 1e-3)){
+    if(iter < max_iter){
           likelihood_prev = log_likelihood_logistic(design = design, outcome = outcome, beta = beta)
           grad = gradient_logistic(design = design, outcome = outcome, beta = beta)
           info = -hessian(design = design, outcome = outcome, beta = beta)
           beta = beta + solve(info, grad)
           likelihood_new = log_likelihood_logistic(design = design, outcome = outcome, beta = beta)
-          z = likelihood_new - likelihood_prev
-          change = z^2 / 2
+          abs_diff = likelihood_new - likelihood_prev
+          rel_diff = abs_diff / pmax(abs(likelihood_new), abs(likelihood_prev))
           iter = iter + 1
-  }else {
-    stop("Convergence not reached in maximum iterations")
-  }
+    } else {
+      stop("Convergence not reached in maximum iterations")
+    }
   }
   mle = list(coef = beta, info_mat = info)
   return(mle)
-  }
-
+}
